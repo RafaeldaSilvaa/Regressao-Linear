@@ -77,7 +77,7 @@ class RegressaoLinear:
 
     def previsao(self,X):
         retorno = self.MultiplicacaoMatrizes(self.Transposta(self.multiplica_partes),self.alteraListaPredict(X))
-        print("O resultado da predição é: ", retorno[0][0])
+        #print("O resultado da predição é: ", retorno[0][0])
         return retorno
 
     def AlteraLista(self, X):
@@ -88,7 +88,24 @@ class RegressaoLinear:
         return h
 
     def alteraListaPredict(self, X):
-     return [[1,X]]   
+        return [[1,X]]
+
+    def SQtot(self):
+        SQtot = 0
+        for x in range(len(self.y)):
+            SQtot += (self.y[x] - (sum(self.y)/len(self.y))) ** 2
+        return SQtot
+
+    def SQres(self):
+        SQres = 0
+        for x in range(len(self.y)):
+            valor = self.y[x]
+            prev = self.previsao(self.X[x])[0][0]
+            SQres += ((valor - prev) ** 2)
+        return SQres
+
+    def R2(self):
+        return (1 - (self.SQres()/self.SQtot()))
 
 X_slides =  [69,67,71,65,72,68,74,65,66,72]
 y_slides = [9.5,8.5,11.5,10.5,11,7.5,12,7,7.5,13]
@@ -99,19 +116,20 @@ y_Water = [20.79,20.79,20.79,22.4,22.67,23.15,23.35,23.89,23.99,24.02,24.01,25.1
 X_Census = [1900,1910,1910,1920,1930,1940,1950,1960,1970,1980,1990,2000]
 y_Census = [759950,919720,919720,1057110,1232030,1316690,1506970,1793230,2032120,2265050,2496330,2814220]
 
-
-
 A = RegressaoLinear()
 A.fit(X_slides,y_slides)
-A.previsao(70)
+print('A previsão de altura 70 no conjunto de dados "Height x Shoe Size" é: ', A.previsao(70)[0][0])
 A.mostraGrafico(X_slides,y_slides)
+print('O conjunto de dados "Height x Shoe Size" está com R² de: ', A.R2(), '\n')
 
 B = RegressaoLinear()
 B.fit(X_Water,y_Water)
-B.previsao(194)
-A.mostraGrafico(X_Water,y_Water)
+print('A previsão de 194 no conjunto de dados "Alps Water" é: ', B.previsao(194)[0][0])
+B.mostraGrafico(X_Water,y_Water)
+print('O conjunto de dados "Alps Water" está com R² de: ', B.R2(), '\n')
 
 C = RegressaoLinear()
 C.fit(X_Census,y_Census)
-C.previsao(2010)
-A.mostraGrafico(X_Census,y_Census)
+print('A previsão de 2010 no conjunto de dados "US Census Dataset" é: ', C.previsao(2010)[0][0])
+C.mostraGrafico(X_Census,y_Census)
+print('O conjunto de dados "US Census Dataset" está com R² de: ', C.R2(), '\n')

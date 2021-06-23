@@ -5,6 +5,8 @@ class RegressaoQuadratica:
         self.coeficiente_angular = None
         self.coeficiente_linear = None
         self.multiplica_partes = None
+        self.X = None
+        self.y = None
 
     def Transposta(self,matriz):
         rez = [[matriz[j][i] for j in range(len(matriz))] for i in range(len(matriz[0]))]
@@ -14,6 +16,9 @@ class RegressaoQuadratica:
         return [[sum(a * b for a, b in zip(A_row, B_col)) for B_col in zip(*matrizA)] for A_row in matrizB]
 
     def fit(self, X, y):
+        self.X = X
+        self.y = y
+
         X = self.AlteraLista(X)
         XT = self.Transposta(X)
         XT_vezes_X = self.MultiplicacaoMatrizes(XT,X)
@@ -26,7 +31,7 @@ class RegressaoQuadratica:
 
     def previsao(self,X):
         h = self.MultiplicacaoMatrizes(self.Transposta(self.multiplica_partes),self.alteraListaPredict(X))
-        print("O resultado da predição é: ", h[0][0])
+        #print("O resultado da predição é: ", h[0][0])
         return h
         #return [[sum(a * b for a, b in zip(A_row, B_col)) for B_col in zip(*self.Transposta(self.multiplica_partes))] for A_row in X]
 
@@ -81,10 +86,28 @@ class RegressaoQuadratica:
         plt.ylabel('Target value (y)')
         plt.show()
 
+    def SQtot(self):
+        SQtot = 0
+        for x in range(len(self.y)):
+            SQtot += (self.y[x] - (sum(self.y)/len(self.y))) ** 2
+        return SQtot
+
+    def SQres(self):
+        SQres = 0
+        for x in range(len(self.y)):
+            valor = self.y[x]
+            prev = self.previsao(self.X[x])[0][0]
+            SQres += ((valor - prev) ** 2)
+        return SQres
+
+    def R2(self):
+        return (1 - (self.SQres()/self.SQtot()))
+
 X_Census = [1900,1910,1910,1920,1930,1940,1950,1960,1970,1980,1990,2000]
 y_Census = [759950,919720,919720,1057110,1232030,1316690,1506970,1793230,2032120,2265050,2496330,2814220]
 
 A = RegressaoQuadratica()
 A.fit(X_Census,y_Census)
-A.previsao(2010)
+print('A previsão de 2010 no conjunto de dados "US Census Dataset" é: ', A.previsao(2010)[0][0])
 A.mostraGrafico(X_Census,y_Census)
+print('O conjunto de dados "US Census Dataset" está com R² de: ', A.R2(), '\n')
